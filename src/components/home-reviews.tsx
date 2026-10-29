@@ -1,0 +1,4 @@
+import Link from "next/link";
+import { db } from "@/lib/db";
+import { getHomeReviews } from "@/lib/home-reviews";
+export default async function HomeReviews(){const reviews=await getHomeReviews((args)=>db.review.findMany(args as Parameters<typeof db.review.findMany>[0]));return <section className="section soft"><div className="container"><div className="section-head"><div><span className="eyebrow">Mijozlar fikri</span><h2>Hamkorlarimiz nima deydi?</h2></div><Link className="text-link" href="/sharhlar">Barcha sharhlar →</Link></div>{reviews.length?<div className="grid-4">{reviews.map(r=><article className="review-card" key={r.id}><div className="stars">{"★".repeat(r.rating)}{"☆".repeat(5-r.rating)}</div><p>{r.body}</p><strong>{r.name}</strong></article>)}</div>:<div className="panel-card empty">Birinchi loyihangizdan keyin sharhlaringiz shu yerda ko‘rinadi.</div>}</div></section>}
