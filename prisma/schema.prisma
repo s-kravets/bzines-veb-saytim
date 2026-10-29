@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  number         String      @unique
+  service        String
+  status         OrderStatus @default(ACCEPTED)
+  customerName   String
+  contact        String
+  pages          Int?
+  topic          String?
+  description    String
+  style          String?
+  platform       String?
+  extra          String?
+  price          Int?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  messages       Message[]
+  reviews        Review[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  orderId   String
+  author    String
+  body      String
+  isReadByAdmin Boolean @default(false)
+  isReadByCustomer Boolean @default(false)
+  createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  name      String
+  rating    Int
+  body      String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Price {
+  id      String @id @default(cuid())
+  service String
+  pages   Int
+  amount  Int
+  @@unique([service, pages])
+}
+
+model SecurityEvent {
+  id        String   @id @default(cuid())
+  event     String
+  ip        String?
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model Counter {
+  name  String @id
+  value Int    @default(0)
+}
